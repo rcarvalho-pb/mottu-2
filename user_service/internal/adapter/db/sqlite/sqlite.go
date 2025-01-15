@@ -16,7 +16,7 @@ import (
 var dbTimeout = 10 * time.Second
 
 type DB struct {
-	DB *sqlx.DB
+	db *sqlx.DB
 }
 
 func GetDB(dbPath string) *DB {
