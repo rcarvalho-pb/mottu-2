@@ -24,14 +24,6 @@ func getRoleCod(role string) Role {
 	return Role(slices.Index(ROLES, role))
 }
 
-type UserRepository interface {
-	CreateUser(*User) error
-	UpdateUser(*User) error
-	GetUserById(*int64) (*User, error)
-	GetUserByUsername(*string) (*User, error)
-	GetAllUsers() ([]*User, error)
-}
-
 type User struct {
 	Id             int64     `db:"id"`
 	Username       string    `db:"username"`

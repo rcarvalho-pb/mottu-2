@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/rcarvalho-pb/mottu-user_service/internal/adapter/db/sqlite"
+	"github.com/rcarvalho-pb/mottu-user_service/internal/config"
 )
 
 func main() {
-	dbPath := os.Getenv("DB_PATH")
-	db := sqlite.GetDB(dbPath)
+	fmt.Println("Starting....")
+	conf := config.Start()
+	fmt.Printf("%+v\n", conf)
+	db := sqlite.GetDB(conf.DBPath)
 	users, err := db.GetAllUsers()
 	if err != nil {
 		fmt.Println(err)
@@ -18,4 +20,5 @@ func main() {
 			fmt.Printf("%+v\n", u)
 		}
 	}
+	fmt.Println("Ending...")
 }
