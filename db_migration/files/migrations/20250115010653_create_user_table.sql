@@ -3,6 +3,7 @@
 SELECT 'up SQL query';
 -- +goose StatementEnd
 CREATE TABLE IF NOT EXISTS tb_users (
+    avatar TEXT NOT NULL DEFAULT '',
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL,
     password TEXT NOT NULL,

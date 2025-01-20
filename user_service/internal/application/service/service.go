@@ -1,7 +1,9 @@
 package service
 
 import (
+	"io"
 	"os"
+	"path/filepath"
 
 	"github.com/rcarvalho-pb/mottu-user_service/internal/application/dto"
 	"github.com/rcarvalho-pb/mottu-user_service/internal/application/repository"
@@ -20,6 +22,27 @@ func New(rep repository.UserRepository) *UserService {
 }
 
 func (us *UserService) CreateUser(dto *dto.UserDTO) error {
+	user := model.UserFromDTO(dto)
+	if dto.CNHFileName != "" && dto.CNHFile != nil {
+		cnhFilePath := getPathFromHash(generateHash(dto.CNHFileName))
+		user.CNHFilePath = filepath.Join(cnhFilePath, dto.CNHFileName)
+		if err := os.MkdirAll(cnhFilePath, os.ModePerm); err != nil {
+			return err
+		}
+		file, err := os.Create(user.CNHFilePath)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+		if _, err = io.Copy(file, dto.CNHFile); err != nil {
+			return err
+		}
+	}
+	if dto.AvatarFileName != "" && dto.AvatarFile != nil {
+		avatarFilePath := filepath.Join(getPathFromHash(generateHash(dto.AvatarFileName)), dto.AvatarFileName)
+		user.Avatar = avatarFilePath
+	}
+
 	if err := us.UserRepository.CreateUser(model.UserFromDTO(dto)); err != nil {
 		return err
 	}

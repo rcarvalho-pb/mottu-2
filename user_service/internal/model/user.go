@@ -26,6 +26,7 @@ func getRoleCod(role string) Role {
 
 type User struct {
 	Id             int64     `db:"id"`
+	Avatar         string    `db:"avatar"`
 	Username       string    `db:"username"`
 	Password       string    `db:"password"`
 	Role           Role      `db:"role"`
