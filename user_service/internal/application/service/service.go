@@ -7,10 +7,10 @@ import (
 )
 
 type UserService struct {
-	repository *repository.UserRepository
+	repository repository.UserRepository
 }
 
-func New(rep *repository.UserRepository) *UserService {
+func New(rep repository.UserRepository) *UserService {
 	baseDirectory = os.Getenv("IMAGES_DIRECTORY")
 	return &UserService{
 		repository: rep,

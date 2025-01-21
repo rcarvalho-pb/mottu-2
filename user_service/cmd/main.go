@@ -13,7 +13,15 @@ func main() {
 	conf := config.Start()
 	fmt.Printf("%+v\n", conf)
 	db := sqlite.GetDB(conf.DBPath)
-	service := service.New(*db)
+	service := service.New(db)
+	allUsers, err := service.GetAllUsers()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		for _, u := range allUsers {
+			fmt.Printf("%+v\n", u)
+		}
+	}
 	users, err := db.GetAllUsers()
 	if err != nil {
 		fmt.Println(err)

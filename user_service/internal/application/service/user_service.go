@@ -15,7 +15,7 @@ import (
 
 func (us *UserService) CreateUser(dto *dto.UserDTO) error {
 	allowedTypes := map[string]bool{
-		"image/jpeg":          true,
+		"image/jpeg":      true,
 		"application/pdf": true,
 	}
 	user := model.UserFromDTO(dto)
@@ -57,7 +57,7 @@ func (us *UserService) CreateUser(dto *dto.UserDTO) error {
 			return err
 		}
 	}
-	if err := us.UserRepository.CreateUser(model.UserFromDTO(dto)); err != nil {
+	if err := us.repository.CreateUser(model.UserFromDTO(dto)); err != nil {
 		_ = os.RemoveAll(strings.Split(user.Avatar, "/")[0])
 		_ = os.RemoveAll(strings.Split(user.CNHFilePath, "/")[0])
 		return err
@@ -66,7 +66,7 @@ func (us *UserService) CreateUser(dto *dto.UserDTO) error {
 }
 
 func (us *UserService) GetUserById(id int64) (*dto.UserDTO, error) {
-	user, err := us.UserRepository.GetUserById(id)
+	user, err := us.repository.GetUserById(id)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (us *UserService) GetUserById(id int64) (*dto.UserDTO, error) {
 }
 
 func (us *UserService) GetAllUsers() ([]*dto.UserDTO, error) {
-	users, err := us.UserRepository.GetAllUsers()
+	users, err := us.repository.GetAllUsers()
 	if err != nil {
 		return nil, err
 	}

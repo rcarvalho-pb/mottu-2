@@ -57,11 +57,12 @@ func (u *User) ToDTO() *dto.UserDTO {
 		CNPJ:           u.CNPJ,
 		CNH:            u.CNH,
 		CNHType:        u.CNHType,
-		CNHFilePath:    []byte{},
 		ActiveLocation: u.ActiveLocation,
 		CreatedAt:      u.CreatedAt,
 		UpdatedAt:      u.UpdatedAt,
 		Active:         u.Active,
+		AvatarFileName: u.Avatar,
+		CNHFileName:    u.CNHFilePath,
 	}
 }
 
@@ -76,10 +77,11 @@ func UserFromDTO(dto *dto.UserDTO) *User {
 		CNPJ:           dto.CNPJ,
 		CNH:            dto.CNH,
 		CNHType:        dto.CNHType,
-		CNHFilePath:    "",
+		CNHFilePath:    dto.CNHFileName,
 		ActiveLocation: dto.ActiveLocation,
 		CreatedAt:      dto.CreatedAt,
 		UpdatedAt:      dto.UpdatedAt,
 		Active:         dto.Active,
+		Avatar:         dto.AvatarFileName,
 	}
 }
