@@ -6,6 +6,7 @@ require (
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/stretchr/testify v1.10.0
+	golang.org/x/crypto v0.32.0
 )
 
 require (

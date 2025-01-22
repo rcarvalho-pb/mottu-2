@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -46,26 +47,30 @@ func (u *UserRepositoryMock) GetAllUsers() ([]*model.User, error) {
 	return args.Get(0).([]*model.User), args.Error(1)
 }
 
-func TestCreateUser(t *testing.T) error {
+func TestCreateUser(t *testing.T) {
 	userDTO := &dto.UserDTO{
 		Username:       "Ramon",
 		Password:       "123",
-		Role:           "Admin",
+		Role:           "admin",
 		Name:           "Ramon",
 		BirthDate:      time.Now(),
-		CNPJ:           "123123123",
-		CNH:            "124124124",
+		CNPJ:           "123123",
+		CNH:            "12341234",
 		CNHType:        "B",
-		ActiveLocation: true,
+		ActiveLocation: false,
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),
 		Active:         true,
-		AvatarFileName: ,
-		AvatarFile:     []byte{},
+		AvatarFileName: "",
+		AvatarFile:     nil,
 		CNHFileName:    "",
-		CNHFile:        []byte{},
+		CNHFile:        nil,
 	}
 	userRepository := new(UserRepositoryMock)
+	fmt.Println("teste")
 	userService := New(userRepository)
-	userRepository.On("CreateUser")
+	userRepository.On("CreateUser", mock.Anything).Return(nil)
+	if err := userService.CreateUser(userDTO); err != nil {
+		t.Errorf(err.Error())
+	}
 }
