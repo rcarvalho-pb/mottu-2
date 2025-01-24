@@ -61,16 +61,20 @@ func TestCreateUser(t *testing.T) {
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),
 		Active:         true,
-		AvatarFileName: "",
-		AvatarFile:     nil,
-		CNHFileName:    "",
-		CNHFile:        nil,
+		AvatarFileName: "avatar.jpeg",
+		AvatarFile:     []byte{1, 2, 3},
+		CNHFileName:    "cnh.pdf",
+		CNHFile:        []byte{1, 2, 3},
 	}
 	userRepository := new(UserRepositoryMock)
 	fmt.Println("teste")
-	userService := New(userRepository)
+	userService := New(userRepository, "/Users/ramon/Projects/go/mottu/database/images")
 	userRepository.On("CreateUser", mock.Anything).Return(nil)
 	if err := userService.CreateUser(userDTO); err != nil {
-		t.Errorf(err.Error())
+		t.Errorf("erro criando novo user")
+	}
+	fmt.Printf("%+v\n", userDTO)
+	if err := comparePasswords(userDTO.Password, "123"); err != nil {
+		t.Errorf("erro ao comparar passwords")
 	}
 }

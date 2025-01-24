@@ -13,7 +13,7 @@ func main() {
 	conf := config.Start()
 	fmt.Printf("%+v\n", conf)
 	db := sqlite.GetDB(conf.DBPath)
-	service := service.New(db)
+	service := service.New(db, conf.FSPath)
 	allUsers, err := service.GetAllUsers()
 	if err != nil {
 		fmt.Println(err)

@@ -22,15 +22,15 @@ var allowedTypes = map[string]bool{
 func (us *UserService) CreateUser(dto *dto.UserDTO) error {
 	user := model.UserFromDTO(dto)
 	if dto.CNHFileName != "" && dto.CNHFile != nil {
-		contentType := http.DetectContentType(dto.CNHFile)
-		if !allowedTypes[contentType] {
-			return fmt.Errorf("invalid content type for cnh file. Only accept pdf")
-		}
+		// contentType := http.DetectContentType(dto.CNHFile)
+		// if !allowedTypes[contentType] {
+		// 	return fmt.Errorf("invalid content type for cnh file. Only accept pdf")
+		// }
 		cnhFilePath := getPathFromHash(generateHash(dto.CNHFileName))
-		user.CNHFilePath = filepath.Join(cnhFilePath, fmt.Sprintf("%s_cnh.pdf", dto.Username))
-		if err := os.MkdirAll(filepath.Join(baseDirectory, cnhFilePath), os.ModePerm); err != nil {
+		if err := os.MkdirAll(cnhFilePath, os.ModePerm); err != nil {
 			return err
 		}
+		user.CNHFilePath = filepath.Join(cnhFilePath, fmt.Sprintf("%s_cnh.pdf", dto.Username))
 		file, err := os.Create(user.CNHFilePath)
 		if err != nil {
 			return err
@@ -41,15 +41,15 @@ func (us *UserService) CreateUser(dto *dto.UserDTO) error {
 		}
 	}
 	if dto.AvatarFileName != "" && dto.AvatarFile != nil {
-		contentType := http.DetectContentType(dto.CNHFile)
-		if !allowedTypes[contentType] {
-			return fmt.Errorf("invalid content type for cnh file. Only accept jpeg")
-		}
+		// contentType := http.DetectContentType(dto.CNHFile)
+		// if !allowedTypes[contentType] {
+		// 	return fmt.Errorf("invalid content type for cnh file. Only accept jpeg")
+		// }
 		avatarFilePath := getPathFromHash(generateHash(dto.AvatarFileName))
-		user.Avatar = filepath.Join(avatarFilePath, fmt.Sprintf("%s_avatar.jpeg", dto.Username))
-		if err := os.MkdirAll(filepath.Join(baseDirectory, avatarFilePath), os.ModePerm); err != nil {
+		if err := os.MkdirAll(avatarFilePath, os.ModePerm); err != nil {
 			return err
 		}
+		user.Avatar = filepath.Join(avatarFilePath, fmt.Sprintf("%s_avatar.jpeg", dto.Username))
 		file, err := os.Create(user.Avatar)
 		if err != nil {
 			return err
@@ -64,6 +64,7 @@ func (us *UserService) CreateUser(dto *dto.UserDTO) error {
 		return err
 	}
 	user.Password = string(hashedPassword)
+	fmt.Printf("%+v\n", user)
 	if err := us.repository.CreateUser(model.UserFromDTO(dto)); err != nil {
 		_ = os.RemoveAll(filepath.Join(baseDirectory, strings.Split(strings.TrimPrefix(user.Avatar, "/"), "/")[0]))
 		_ = os.RemoveAll(filepath.Join(baseDirectory, strings.Split(strings.TrimPrefix(user.CNHFilePath, "/"), "/")[0]))
