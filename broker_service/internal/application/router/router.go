@@ -9,7 +9,7 @@ import (
 func New() *http.ServeMux {
 	routes.Start()
 	router := http.NewServeMux()
-	router.Handle("/user/", http.StripPrefix("/user", newUserMux()))
+	router.Handle("/api/user/", http.StripPrefix("/api/user", newUserMux()))
 	return router
 }
 

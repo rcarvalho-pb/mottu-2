@@ -5,7 +5,7 @@ SELECT 'up SQL query';
 INSERT INTO tb_users
     (username, password, role, name, birth_date, cnpj, cnh, cnh_type, cnh_file_path)
 VALUES
-    ('rcarvalho', '$2a$10$g.Q7hSBL.1pftZv3RkE3nOu2nzfBuB9UuNnEMBnsS.VXg5XZFwMAW', 0, 'Ramon', '1994-07-22', '123123123123', '123123123123', 'A', 'TESTE');
+    ('rcarvalho', '$2a$10$g.Q7hSBL.1pftZv3RkE3nOu2nzfBuB9UuNnEMBnsS.VXg5XZFwMAW', 1, 'Ramon', '1994-07-22', '123123123123', '123123123123', 'A', 'TESTE');
 
 INSERT INTO tb_users
     (username, password, name, birth_date, cnpj, cnh, cnh_type, cnh_file_path)

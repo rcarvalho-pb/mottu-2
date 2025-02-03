@@ -17,7 +17,7 @@ const (
 )
 
 func (r Role) String() string {
-	return ROLES[r+1]
+	return ROLES[r-1]
 }
 
 func getRoleCod(role string) Role {

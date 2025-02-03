@@ -73,6 +73,7 @@ func (us *UserService) CreateUser(dto *dto.UserDTO) error {
 		_ = os.RemoveAll(filepath.Join(baseDirectory, strings.Split(strings.TrimPrefix(user.CNHFilePath, "/"), "/")[0]))
 		return err
 	}
+	log.Println("User Service: user saved")
 	return nil
 }
 
@@ -95,6 +96,7 @@ func (us *UserService) GetUserByUsername(username string) (*dto.UserDTO, error) 
 }
 
 func (us *UserService) GetAllUsers() ([]*dto.UserDTO, error) {
+	log.Println("Finding all users")
 	users, err := us.repository.GetAllUsers()
 	if err != nil {
 		return nil, err
@@ -103,20 +105,24 @@ func (us *UserService) GetAllUsers() ([]*dto.UserDTO, error) {
 	for _, u := range users {
 		usersDTO = append(usersDTO, u.ToDTO())
 	}
+	log.Println("User Service: users returned")
 	return usersDTO, nil
 }
 
 func (us *UserService) GetAllActiveUsers() ([]*dto.UserDTO, error) {
+	log.Println("User Service: finding all active users")
 	users, err := us.repository.GetAllUsers()
 	if err != nil {
 		return nil, err
 	}
+	log.Println("User Service: qtd active users -", len(users))
 	usersDTO := make([]*dto.UserDTO, 0)
 	for _, u := range users {
 		if u.Active {
 			usersDTO = append(usersDTO, u.ToDTO())
 		}
 	}
+	log.Println("User Service: active users returned")
 	return usersDTO, nil
 }
 

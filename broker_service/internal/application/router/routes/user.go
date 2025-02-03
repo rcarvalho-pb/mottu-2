@@ -29,4 +29,11 @@ var UserRoutes = []Route{
 		Authentication: false,
 		AdminAccess:    false,
 	},
+	{
+		Uri:            "/",
+		Method:         http.MethodGet,
+		Function:       ctlr.UserController.GetAllActiveUsers,
+		Authentication: false,
+		AdminAccess:    false,
+	},
 }

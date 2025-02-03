@@ -21,3 +21,9 @@ type UserDTO struct {
 	CNHFileName    string
 	CNHFile        []byte
 }
+
+type UpdatePasswordDTO struct {
+	Id          int64  `json:"id"`
+	Password    string `json:"password"`
+	NewPassword string `json:"new_password"`
+}

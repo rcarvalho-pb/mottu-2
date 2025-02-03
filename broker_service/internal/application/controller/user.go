@@ -21,7 +21,7 @@ func newUserController(serv *service.Service) UserController {
 }
 
 func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
-	log.Println("received request to create user")
+	log.Println("Broker: received new user creation request")
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		helper.ErrorJson(w, err)
 		return
@@ -67,4 +67,31 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	helper.WriteJson(w, http.StatusCreated, nil)
+	log.Println("Broker: user successfully saved")
+}
+
+func (uc *UserController) GetAllActiveUsers(w http.ResponseWriter, r *http.Request) {
+	log.Println("Broker: get all active users request")
+	users, err := uc.service.UserService.GetAllActiveUsers()
+	if err != nil {
+		helper.ErrorJson(w, err)
+		return
+	}
+	helper.WriteJson(w, http.StatusOK, users)
+	log.Println("Broker: all active users returned")
+}
+
+func (uc *UserController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	log.Println("Broker: get all users request")
+	users, err := uc.service.UserService.GetAllUsers()
+	if err != nil {
+		helper.ErrorJson(w, err)
+		return
+	}
+	helper.WriteJson(w, http.StatusOK, users)
+	log.Println("Broker: all users returned")
+}
+
+func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
+
 }

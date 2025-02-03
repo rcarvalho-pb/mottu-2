@@ -2,6 +2,7 @@ package rpc_server
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"net/rpc"
 
@@ -41,12 +42,14 @@ func (r *RPCServer) RPCListen() error {
 }
 
 func (r *RPCServer) CreateUser(newUser *dto.UserDTO, _ *struct{}) error {
+	log.Printf("User Service: new user received:\n%+v\n", newUser)
 	if newUser == nil {
 		return fmt.Errorf("user can't be null")
 	}
 	if err := r.userService.CreateUser(newUser); err != nil {
 		return err
 	}
+	log.Println("User Service: user saved succesfully")
 	return nil
 }
 
@@ -69,11 +72,13 @@ func (r *RPCServer) GetUserByUsername(username *string, reply *dto.UserDTO) erro
 }
 
 func (r *RPCServer) GetAllActiveUsers(_ struct{}, reply *[]*dto.UserDTO) error {
+	log.Println("User Service: starting finding all active users")
 	users, err := r.userService.GetAllActiveUsers()
 	if err != nil {
 		return fmt.Errorf("error getting all active users: %s\n", err)
 	}
 	*reply = users
+	log.Println("User Service: users returned")
 	return err
 }
 
@@ -109,6 +114,13 @@ func (r *RPCServer) ValidatePassword(userDTO *dto.UserDTO, _ *struct{}) error {
 }
 
 func (r *RPCServer) UpdatePassord(userDTO *dto.UserDTO, _ *struct{}) error {
+	if err := r.userService.UpdateUser(userDTO); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *RPCServer) UpdateUser(userDTO *dto.UserDTO, _ *struct{}) error {
 	if err := r.userService.UpdateUser(userDTO); err != nil {
 		return err
 	}
