@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"embed"
-	"fmt"
 	"os"
 	"time"
 
@@ -16,7 +15,6 @@ var migrations embed.FS
 
 func main() {
 	path := os.Getenv("DB_PATH")
-	fmt.Println(path)
 	db := Open(path)
 	defer db.Close()
 

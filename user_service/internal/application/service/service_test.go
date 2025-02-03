@@ -67,7 +67,6 @@ func TestCreateUser(t *testing.T) {
 		CNHFile:        []byte{1, 2, 3},
 	}
 	userRepository := new(UserRepositoryMock)
-	fmt.Println("teste")
 	userService := New(userRepository, "/Users/ramon/Projects/go/mottu/database/images")
 	userRepository.On("CreateUser", mock.Anything).Return(nil)
 	if err := userService.CreateUser(userDTO); err != nil {

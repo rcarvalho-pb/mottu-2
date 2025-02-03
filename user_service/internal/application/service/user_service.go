@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -16,16 +17,18 @@ import (
 
 var allowedTypes = map[string]bool{
 	"image/jpeg":      true,
+	"image/jpg":       true,
 	"application/pdf": true,
 }
 
 func (us *UserService) CreateUser(dto *dto.UserDTO) error {
+	log.Println("Received dto to create user in user service")
 	user := model.UserFromDTO(dto)
 	if dto.CNHFileName != "" && dto.CNHFile != nil {
-		// contentType := http.DetectContentType(dto.CNHFile)
-		// if !allowedTypes[contentType] {
-		// 	return fmt.Errorf("invalid content type for cnh file. Only accept pdf")
-		// }
+		contentType := http.DetectContentType(dto.CNHFile)
+		if !allowedTypes[contentType] {
+			return fmt.Errorf("invalid content type for cnh file. Only accept pdf")
+		}
 		cnhFilePath := getPathFromHash(generateHash(dto.CNHFileName))
 		if err := os.MkdirAll(cnhFilePath, os.ModePerm); err != nil {
 			return err
@@ -41,10 +44,10 @@ func (us *UserService) CreateUser(dto *dto.UserDTO) error {
 		}
 	}
 	if dto.AvatarFileName != "" && dto.AvatarFile != nil {
-		// contentType := http.DetectContentType(dto.CNHFile)
-		// if !allowedTypes[contentType] {
-		// 	return fmt.Errorf("invalid content type for cnh file. Only accept jpeg")
-		// }
+		contentType := http.DetectContentType(dto.CNHFile)
+		if !allowedTypes[contentType] {
+			return fmt.Errorf("invalid content type for cnh file. Only accept jpeg")
+		}
 		avatarFilePath := getPathFromHash(generateHash(dto.AvatarFileName))
 		if err := os.MkdirAll(avatarFilePath, os.ModePerm); err != nil {
 			return err
@@ -64,8 +67,8 @@ func (us *UserService) CreateUser(dto *dto.UserDTO) error {
 		return err
 	}
 	user.Password = string(hashedPassword)
-	fmt.Printf("%+v\n", user)
-	if err := us.repository.CreateUser(model.UserFromDTO(dto)); err != nil {
+	log.Printf("user to save:\n%+v\n", user)
+	if err := us.repository.CreateUser(user); err != nil {
 		_ = os.RemoveAll(filepath.Join(baseDirectory, strings.Split(strings.TrimPrefix(user.Avatar, "/"), "/")[0]))
 		_ = os.RemoveAll(filepath.Join(baseDirectory, strings.Split(strings.TrimPrefix(user.CNHFilePath, "/"), "/")[0]))
 		return err

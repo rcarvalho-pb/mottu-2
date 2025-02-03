@@ -10,9 +10,9 @@ func (db *DB) CreateUser(user *model.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 	stmt := `INSERT INTO tb_users
-    (username, password, name, birth_date, cnpj, cnh, cnh_type, cnh_file_path)
+    (avatar, username, password, name, birth_date, cnpj, cnh, cnh_type, cnh_file_path)
 VALUES
-	(:username, :password, :name, :birth_date, :cnpj, :cnh, :cnh_type, :cnh_file_path)`
+	(:avatar, :username, :password, :name, :birth_date, :cnpj, :cnh, :cnh_type, :cnh_file_path)`
 	if _, err := db.db.NamedExecContext(ctx, stmt, user); err != nil {
 		return err
 	}

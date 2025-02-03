@@ -3,13 +3,16 @@ package service
 import (
 	"crypto/sha256"
 	"fmt"
+	"math/rand"
 	"path/filepath"
+	"time"
 )
 
 var baseDirectory string
 
 func generateHash(filename string) string {
-	hash := sha256.Sum256([]byte(filename))
+	s := fmt.Sprintf("%s%s%d", time.Now().String(), filename, rand.Intn(100000))
+	hash := sha256.Sum256([]byte(s))
 	return fmt.Sprintf("%x", hash)
 }
 

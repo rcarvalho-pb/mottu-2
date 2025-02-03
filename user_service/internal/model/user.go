@@ -12,16 +12,16 @@ type Role int64
 var ROLES = []string{"admin", "common"}
 
 const (
-	ADMIN Role = iota
+	ADMIN Role = iota + 1
 	COMMON
 )
 
 func (r Role) String() string {
-	return ROLES[r]
+	return ROLES[r+1]
 }
 
 func getRoleCod(role string) Role {
-	return Role(slices.Index(ROLES, role))
+	return Role(slices.Index(ROLES, role) + 1)
 }
 
 type User struct {

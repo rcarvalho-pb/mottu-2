@@ -1,4 +1,4 @@
-module github.com/rcarvalho-pb/mottu-broker_service
+module github.com/rcarvalho-pb/mottu-auth_service
 
 go 1.23.4
 
