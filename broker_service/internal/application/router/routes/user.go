@@ -36,4 +36,11 @@ var UserRoutes = []Route{
 		Authentication: false,
 		AdminAccess:    false,
 	},
+	{
+		Uri:            "/{userId}",
+		Method:         http.MethodGet,
+		Function:       ctlr.UserController.GetUserById,
+		Authentication: false,
+		AdminAccess:    false,
+	},
 }

@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/rcarvalho-pb/mottu-broker_service/internal/application/helper"
 	"github.com/rcarvalho-pb/mottu-broker_service/internal/application/service"
@@ -93,5 +94,15 @@ func (uc *UserController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
-
+	userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
+	if err != nil {
+		helper.ErrorJson(w, err, http.StatusBadRequest)
+		return
+	}
+	user, err := uc.service.UserService.GetUserByiD(userId)
+	if err != nil {
+		helper.ErrorJson(w, err, http.StatusInternalServerError)
+		return
+	}
+	helper.WriteJson(w, http.StatusOK, user)
 }
