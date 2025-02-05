@@ -106,3 +106,69 @@ func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 	}
 	helper.WriteJson(w, http.StatusOK, user)
 }
+
+func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	log.Println("Broker: received update request")
+	userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
+	if err != nil {
+		helper.ErrorJson(w, err, http.StatusBadRequest)
+		return
+	}
+	var userDTO model.UserDTO
+	if err := helper.ReadJson(w, r, &userDTO); err != nil {
+		helper.ErrorJson(w, err, http.StatusUnprocessableEntity)
+		return
+	}
+	userDTO.Id = userId
+	log.Printf("Broker: received user:\n%+v\n", userDTO)
+	if err := uc.service.UserService.UpdateUser(&userDTO); err != nil {
+		helper.ErrorJson(w, err, http.StatusInternalServerError)
+		return
+	}
+	helper.WriteJson(w, http.StatusOK, nil)
+}
+
+func (uc *UserController) UpdatePassword(w http.ResponseWriter, r *http.Request) {
+	userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
+	if err != nil {
+		helper.ErrorJson(w, err)
+		return
+	}
+	var newPassword model.UpdatePasswordDTO
+	if err := helper.ReadJson(w, r, &newPassword); err != nil {
+		helper.ErrorJson(w, err, http.StatusUnprocessableEntity)
+		return
+	}
+	newPassword.Id = userId
+	if err := uc.service.UserService.UpdatePassword(&newPassword); err != nil {
+		helper.ErrorJson(w, err, http.StatusInternalServerError)
+		return
+	}
+	helper.WriteJson(w, http.StatusOK, nil)
+}
+
+func (uc *UserController) DeactivateUser(w http.ResponseWriter, r *http.Request) {
+	userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
+	if err != nil {
+		helper.ErrorJson(w, err)
+		return
+	}
+	if err := uc.service.UserService.DeactivateUser(userId); err != nil {
+		helper.ErrorJson(w, err, http.StatusInternalServerError)
+		return
+	}
+	helper.WriteJson(w, http.StatusOK, nil)
+}
+
+func (uc *UserController) ReactivateUser(w http.ResponseWriter, r *http.Request) {
+	userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
+	if err != nil {
+		helper.ErrorJson(w, err)
+		return
+	}
+	if err := uc.service.UserService.ReactivateUser(userId); err != nil {
+		helper.ErrorJson(w, err, http.StatusInternalServerError)
+		return
+	}
+	helper.WriteJson(w, http.StatusOK, nil)
+}

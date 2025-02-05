@@ -127,10 +127,12 @@ func (us *UserService) GetAllActiveUsers() ([]*dto.UserDTO, error) {
 }
 
 func (us *UserService) UpdateUser(dto *dto.UserDTO) error {
+	log.Printf("User Service: received user\n%+v\n", dto)
 	user, err := us.repository.GetUserById(dto.Id)
 	if err != nil {
 		return err
 	}
+	log.Printf("User Service: finded user\n%+v\n", user)
 	if dto.Username != "" {
 		user.Username = dto.Username
 	}
@@ -196,6 +198,7 @@ func (us *UserService) UpdateUser(dto *dto.UserDTO) error {
 		}
 	}
 	user.UpdateTime()
+	log.Printf("User Service: user to save\n%+v\n", user)
 	if err := us.repository.UpdateUser(user); err != nil {
 		return err
 	}

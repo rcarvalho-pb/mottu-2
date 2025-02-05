@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -14,16 +15,19 @@ type jsonResponse struct {
 }
 
 func ReadJson(w http.ResponseWriter, r *http.Request, data any) error {
-	maxBytes := 10 << 20 // one megabyte
+	log.Println("Broker: reading JSON")
+	// Limita o tamanho máximo do corpo da requisição a 10MB
+	maxBytes := 10 << 20 // 10 megabytes
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 	dec := json.NewDecoder(r.Body)
-	err := dec.Decode(data)
-	if err != nil {
+	// Decodifica o JSON para a estrutura de destino
+	if err := dec.Decode(data); err != nil {
 		return err
 	}
-	err = dec.Decode(&struct{}{})
-	if err != io.EOF {
-		return errors.New("body must have only a single JSON value")
+	log.Printf("Received JSON: %+v\n", data)
+	// Verifica se há mais de um JSON no corpo da requisição
+	if err := dec.Decode(&struct{}{}); err != io.EOF {
+		return errors.New("body must contain only a single JSON value")
 	}
 	return nil
 }

@@ -113,8 +113,8 @@ func (r *RPCServer) ValidatePassword(userDTO *dto.UserDTO, _ *struct{}) error {
 	return nil
 }
 
-func (r *RPCServer) UpdatePassord(userDTO *dto.UserDTO, _ *struct{}) error {
-	if err := r.userService.UpdateUser(userDTO); err != nil {
+func (r *RPCServer) UpdatePassword(passwordDTO *dto.UpdatePasswordDTO, _ *struct{}) error {
+	if err := r.userService.UpdatePassword(passwordDTO); err != nil {
 		return err
 	}
 	return nil

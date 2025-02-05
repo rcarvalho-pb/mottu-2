@@ -23,7 +23,7 @@ type UserDTO struct {
 }
 
 type UpdatePasswordDTO struct {
-	Id          int64  `json:"id"`
-	Password    string `json:"password"`
-	NewPassword string `json:"new_password"`
+	Id          int64  `json:"id,omitempty"`
+	Password    string `json:"password,omitempty"`
+	NewPassword string `json:"new_password,omitempty"`
 }

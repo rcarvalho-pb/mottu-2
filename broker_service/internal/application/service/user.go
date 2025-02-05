@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"log"
 
 	rpc_client "github.com/rcarvalho-pb/mottu-broker_service/internal/application/rpc/client"
 	"github.com/rcarvalho-pb/mottu-broker_service/internal/config"
@@ -79,6 +80,7 @@ func (us *UserService) UpdatePassword(dto *model.UpdatePasswordDTO) error {
 }
 
 func (us *UserService) UpdateUser(dto *model.UserDTO) error {
+	log.Printf("%+v\n", dto)
 	if err := rpc_client.Call(config.UserPort, fmt.Sprintf("%s.UpdateUser", USER_RESOURCE), &dto, &struct{}{}); err != nil {
 		return err
 	}
