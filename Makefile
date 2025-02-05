@@ -4,6 +4,8 @@ USER_BINARY=userApp
 USER_SERVICE_PORT=12346
 BROKER_BINARY=brokerApp
 BROKER_SERVICE_PORT=12345
+AUTH_BINARY=brokerApp
+AUTH_SERVICE_PORT=12347
 run: user-service broker-service
 user-service:
 	@echo building user service...
@@ -11,6 +13,12 @@ user-service:
 	@echo building done, starting user service on port ${USER_SERVICE_PORT}
 	@cd ./user_service/ && export DB_PATH=${DB_PATH} IMAGES_DIRECTORY=${IMAGES_DIRECTORY} USER_SERVICE_PORT=${USER_SERVICE_PORT} && app/${USER_BINARY} &
 	@echo user service started
+auth-service:
+	@echo building auth service...
+	@cd ./broker_service/ && go build -o app/${AUTH_BINARY} ./cmd
+	@echo building done, starting broker service on port ${AUTH_SERVICE_PORT}
+	@cd ./broker_service/ && export USER_SERVICE_PORT=${USER_SERVICE_PORT} AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT} && app/${AUTH_BINARY} &
+	@echo auth service started
 broker-service:
 	@echo building broker service...
 	@cd ./broker_service/ && go build -o app/${BROKER_BINARY} ./cmd
