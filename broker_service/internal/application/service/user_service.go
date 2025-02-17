@@ -11,8 +11,7 @@ import (
 
 const USER_RESOURCE = "UserService"
 
-type UserService struct {
-}
+type UserService struct{}
 
 func newUserService() *UserService {
 	return &UserService{}

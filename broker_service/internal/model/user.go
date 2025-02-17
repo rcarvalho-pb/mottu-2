@@ -27,3 +27,8 @@ type UpdatePasswordDTO struct {
 	Password    string `json:"password,omitempty"`
 	NewPassword string `json:"new_password,omitempty"`
 }
+
+type AuthRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}

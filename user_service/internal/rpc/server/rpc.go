@@ -56,7 +56,7 @@ func (r *RPCServer) CreateUser(newUser *dto.UserDTO, _ *struct{}) error {
 func (r *RPCServer) GetUserById(userId *int64, reply *dto.UserDTO) error {
 	user, err := r.userService.GetUserById(*userId)
 	if err != nil {
-		return fmt.Errorf("error getting user by id: %s\n", err)
+		return fmt.Errorf("error getting user by id: %s", err)
 	}
 	*reply = *user
 	return err
@@ -65,7 +65,7 @@ func (r *RPCServer) GetUserById(userId *int64, reply *dto.UserDTO) error {
 func (r *RPCServer) GetUserByUsername(username *string, reply *dto.UserDTO) error {
 	user, err := r.userService.GetUserByUsername(*username)
 	if err != nil {
-		return fmt.Errorf("error getting user by username: %s\n", err)
+		return fmt.Errorf("error getting user by username: %s", err)
 	}
 	*reply = *user
 	return err
@@ -75,7 +75,7 @@ func (r *RPCServer) GetAllActiveUsers(_ struct{}, reply *[]*dto.UserDTO) error {
 	log.Println("User Service: starting finding all active users")
 	users, err := r.userService.GetAllActiveUsers()
 	if err != nil {
-		return fmt.Errorf("error getting all active users: %s\n", err)
+		return fmt.Errorf("error getting all active users: %s", err)
 	}
 	*reply = users
 	log.Println("User Service: users returned")
@@ -85,7 +85,7 @@ func (r *RPCServer) GetAllActiveUsers(_ struct{}, reply *[]*dto.UserDTO) error {
 func (r *RPCServer) GetAllUsers(_ struct{}, reply *[]*dto.UserDTO) error {
 	users, err := r.userService.GetAllUsers()
 	if err != nil {
-		return fmt.Errorf("error getting all users: %s\n", err)
+		return fmt.Errorf("error getting all users: %s", err)
 	}
 	*reply = users
 	return err
@@ -93,7 +93,7 @@ func (r *RPCServer) GetAllUsers(_ struct{}, reply *[]*dto.UserDTO) error {
 
 func (r *RPCServer) DeactivateUser(userId *int64, reply *bool) error {
 	if err := r.userService.DeactivateUser(*userId); err != nil {
-		return fmt.Errorf("error deactivating user [%d]: %s\n", userId, err)
+		return fmt.Errorf("error deactivating user [%d]: %s", userId, err)
 	}
 	*reply = true
 	return nil
@@ -101,14 +101,14 @@ func (r *RPCServer) DeactivateUser(userId *int64, reply *bool) error {
 
 func (r *RPCServer) ReactivateUser(userId int64, _ *struct{}) error {
 	if err := r.userService.ActivateUser(userId); err != nil {
-		return fmt.Errorf("error reactivating user [%d]: %s\n", userId, err)
+		return fmt.Errorf("error reactivating user [%d]: %s", userId, err)
 	}
 	return nil
 }
 
 func (r *RPCServer) ValidatePassword(userDTO *dto.UserDTO, _ *struct{}) error {
 	if err := r.userService.ValidatePassword(userDTO); err != nil {
-		return fmt.Errorf("Passwords doesn't match")
+		return fmt.Errorf("passwords doesn't match")
 	}
 	return nil
 }
@@ -124,5 +124,13 @@ func (r *RPCServer) UpdateUser(userDTO *dto.UserDTO, _ *struct{}) error {
 	if err := r.userService.UpdateUser(userDTO); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (r *RPCServer) ComparePasswords(passwords *dto.ComparePasswordsDTO, _ *struct{}) error {
+	if err := r.userService.ComparePasswords(passwords.HashedPassword, passwords.Password); err != nil {
+		return fmt.Errorf("passwords doesn't match")
+	}
+
 	return nil
 }

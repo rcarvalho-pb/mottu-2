@@ -27,3 +27,8 @@ type UpdatePasswordDTO struct {
 	Password    string `json:"password"`
 	NewPassword string `json:"new_password"`
 }
+
+type ComparePasswordsDTO struct {
+	HashedPassword string
+	Password       string
+}
