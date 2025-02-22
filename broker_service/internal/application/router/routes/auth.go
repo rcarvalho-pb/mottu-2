@@ -9,15 +9,14 @@ import (
 
 func ConfigAuthRoutes(mux *http.ServeMux) {
 	for _, r := range AuthRoutes {
-		if r.AdminAccess {
-			mux.HandleFunc(fmt.Sprintf("%s %s", r.Method, r.Uri), middleware.Logger(middleware.IsAdmin(r.Function)))
-		} else {
-			if r.Authentication {
-				mux.HandleFunc(fmt.Sprintf("%s %s", r.Method, r.Uri), middleware.Logger(middleware.Authenticate(r.Function)))
-			} else {
-				mux.HandleFunc(fmt.Sprintf("%s %s", r.Method, r.Uri), middleware.Logger(r.Function))
-			}
+		handler := middleware.Logger(r.Function)
+		switch r.Authentication {
+		case ADMIN:
+			handler = middleware.Logger(middleware.IsAdmin(r.Function))
+		case DEFAULT:
+			handler = middleware.Logger(middleware.Authenticate(r.Function))
 		}
+		mux.HandleFunc(fmt.Sprintf("%s %s", r.Method, r.Uri), handler)
 	}
 }
 
@@ -26,7 +25,6 @@ var AuthRoutes = []Route{
 		Uri:            "/",
 		Method:         http.MethodPost,
 		Function:       ctlr.AuthController.Authenticate,
-		Authentication: false,
-		AdminAccess:    false,
+		Authentication: NONE,
 	},
 }

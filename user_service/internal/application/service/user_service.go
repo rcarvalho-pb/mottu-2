@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -22,7 +21,6 @@ var allowedTypes = map[string]bool{
 }
 
 func (us *UserService) CreateUser(dto *dto.UserDTO) error {
-	log.Println("Received dto to create user in user service")
 	user := model.UserFromDTO(dto)
 	if dto.CNHFileName != "" && dto.CNHFile != nil {
 		contentType := http.DetectContentType(dto.CNHFile)
@@ -67,13 +65,11 @@ func (us *UserService) CreateUser(dto *dto.UserDTO) error {
 		return err
 	}
 	user.Password = string(hashedPassword)
-	log.Printf("user to save:\n%+v\n", user)
 	if err := us.repository.CreateUser(user); err != nil {
 		_ = os.RemoveAll(filepath.Join(baseDirectory, strings.Split(strings.TrimPrefix(user.Avatar, "/"), "/")[0]))
 		_ = os.RemoveAll(filepath.Join(baseDirectory, strings.Split(strings.TrimPrefix(user.CNHFilePath, "/"), "/")[0]))
 		return err
 	}
-	log.Println("User Service: user saved")
 	return nil
 }
 
@@ -96,7 +92,6 @@ func (us *UserService) GetUserByUsername(username string) (*dto.UserDTO, error) 
 }
 
 func (us *UserService) GetAllUsers() ([]*dto.UserDTO, error) {
-	log.Println("Finding all users")
 	users, err := us.repository.GetAllUsers()
 	if err != nil {
 		return nil, err
@@ -105,34 +100,28 @@ func (us *UserService) GetAllUsers() ([]*dto.UserDTO, error) {
 	for _, u := range users {
 		usersDTO = append(usersDTO, u.ToDTO())
 	}
-	log.Println("User Service: users returned")
 	return usersDTO, nil
 }
 
 func (us *UserService) GetAllActiveUsers() ([]*dto.UserDTO, error) {
-	log.Println("User Service: finding all active users")
 	users, err := us.repository.GetAllUsers()
 	if err != nil {
 		return nil, err
 	}
-	log.Println("User Service: qtd active users -", len(users))
 	usersDTO := make([]*dto.UserDTO, 0)
 	for _, u := range users {
 		if u.Active {
 			usersDTO = append(usersDTO, u.ToDTO())
 		}
 	}
-	log.Println("User Service: active users returned")
 	return usersDTO, nil
 }
 
 func (us *UserService) UpdateUser(dto *dto.UserDTO) error {
-	log.Printf("User Service: received user\n%+v\n", dto)
 	user, err := us.repository.GetUserById(dto.Id)
 	if err != nil {
 		return err
 	}
-	log.Printf("User Service: finded user\n%+v\n", user)
 	if dto.Username != "" {
 		user.Username = dto.Username
 	}
@@ -198,7 +187,6 @@ func (us *UserService) UpdateUser(dto *dto.UserDTO) error {
 		}
 	}
 	user.UpdateTime()
-	log.Printf("User Service: user to save\n%+v\n", user)
 	if err := us.repository.UpdateUser(user); err != nil {
 		return err
 	}

@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/rcarvalho-pb/mottu-broker_service/internal/application/global"
 	"github.com/rcarvalho-pb/mottu-broker_service/internal/application/helper"
 	"github.com/rcarvalho-pb/mottu-broker_service/internal/application/service"
 	"github.com/rcarvalho-pb/mottu-broker_service/internal/model"
@@ -22,7 +22,6 @@ func newUserController(serv *service.Service) UserController {
 }
 
 func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
-	log.Println("Broker: received new user creation request")
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		helper.ErrorJson(w, err)
 		return
@@ -68,29 +67,24 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	helper.WriteJson(w, http.StatusCreated, nil)
-	log.Println("Broker: user successfully saved")
 }
 
 func (uc *UserController) GetAllActiveUsers(w http.ResponseWriter, r *http.Request) {
-	log.Println("Broker: get all active users request")
 	users, err := uc.service.UserService.GetAllActiveUsers()
 	if err != nil {
 		helper.ErrorJson(w, err)
 		return
 	}
 	helper.WriteJson(w, http.StatusOK, users)
-	log.Println("Broker: all active users returned")
 }
 
 func (uc *UserController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	log.Println("Broker: get all users request")
 	users, err := uc.service.UserService.GetAllUsers()
 	if err != nil {
 		helper.ErrorJson(w, err)
 		return
 	}
 	helper.WriteJson(w, http.StatusOK, users)
-	log.Println("Broker: all users returned")
 }
 
 func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
@@ -108,10 +102,18 @@ func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	log.Println("Broker: received update request")
+	claims, ok := r.Context().Value(global.CLAIMS).(model.Claims)
+	if !ok {
+		helper.ErrorJson(w, fmt.Errorf("erro recuperando context"))
+		return
+	}
 	userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
 	if err != nil {
 		helper.ErrorJson(w, err, http.StatusBadRequest)
+		return
+	}
+	if userId != claims.UserId && claims.UserRole != "admin" {
+		helper.ErrorJson(w, fmt.Errorf("only admin can update other users"), http.StatusUnauthorized)
 		return
 	}
 	var userDTO model.UserDTO
@@ -120,7 +122,6 @@ func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userDTO.Id = userId
-	log.Printf("Broker: received user:\n%+v\n", userDTO)
 	if err := uc.service.UserService.UpdateUser(&userDTO); err != nil {
 		helper.ErrorJson(w, err, http.StatusInternalServerError)
 		return
@@ -129,9 +130,18 @@ func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uc *UserController) UpdatePassword(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value(global.CLAIMS).(model.Claims)
+	if !ok {
+		helper.ErrorJson(w, fmt.Errorf("erro recuperando context"))
+		return
+	}
 	userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
 	if err != nil {
 		helper.ErrorJson(w, err)
+		return
+	}
+	if userId != claims.UserId && claims.UserRole != "admin" {
+		helper.ErrorJson(w, fmt.Errorf("only admin can update other users"), http.StatusUnauthorized)
 		return
 	}
 	var newPassword model.UpdatePasswordDTO
@@ -148,9 +158,18 @@ func (uc *UserController) UpdatePassword(w http.ResponseWriter, r *http.Request)
 }
 
 func (uc *UserController) DeactivateUser(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value(global.CLAIMS).(model.Claims)
+	if !ok {
+		helper.ErrorJson(w, fmt.Errorf("erro recuperando context"))
+		return
+	}
 	userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
 	if err != nil {
 		helper.ErrorJson(w, err)
+		return
+	}
+	if userId != claims.UserId && claims.UserRole != "admin" {
+		helper.ErrorJson(w, fmt.Errorf("only admin can update other users"), http.StatusUnauthorized)
 		return
 	}
 	if err := uc.service.UserService.DeactivateUser(userId); err != nil {
@@ -161,9 +180,18 @@ func (uc *UserController) DeactivateUser(w http.ResponseWriter, r *http.Request)
 }
 
 func (uc *UserController) ReactivateUser(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value(global.CLAIMS).(model.Claims)
+	if !ok {
+		helper.ErrorJson(w, fmt.Errorf("erro recuperando context"))
+		return
+	}
 	userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
 	if err != nil {
 		helper.ErrorJson(w, err)
+		return
+	}
+	if userId != claims.UserId && claims.UserRole != "admin" {
+		helper.ErrorJson(w, fmt.Errorf("only admin can update other users"), http.StatusUnauthorized)
 		return
 	}
 	if err := uc.service.UserService.ReactivateUser(userId); err != nil {

@@ -8,12 +8,19 @@ import (
 
 var ctlr controller.Controller
 
+type Authentication string
+
+const (
+	ADMIN   Authentication = "admin"
+	DEFAULT Authentication = "default"
+	NONE    Authentication = "none"
+)
+
 type Route struct {
 	Uri            string
 	Method         string
 	Function       func(http.ResponseWriter, *http.Request)
-	Authentication bool
-	AdminAccess    bool
+	Authentication Authentication
 }
 
 func Start() {

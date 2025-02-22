@@ -50,7 +50,7 @@ func (r *RPCServer) GenerateToken(dto *model.UserDTO, reply *string) error {
 }
 
 func (r *RPCServer) ValidateToken(tokenString string, reply *model.ClaimsDTO) error {
-	claims, err := r.GetClaims(tokenString)
+	claims, err := r.TokenService.ValidateToken(tokenString)
 	if err != nil {
 		return fmt.Errorf("error validating token: %s", err)
 	}

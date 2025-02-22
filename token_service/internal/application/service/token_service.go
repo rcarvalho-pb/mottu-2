@@ -9,17 +9,21 @@ import (
 	"github.com/rcarvalho-pb/mottu-token_service/internal/model"
 )
 
-var jwtSecret = []byte(config.Secret)
-
-type TokenService struct{}
-
-func NewTokenService() *TokenService {
-	return &TokenService{}
+type TokenService struct {
+	jwtSecret []byte
 }
 
+// NewTokenService cria uma nova instância do serviço de tokens
+func NewTokenService() *TokenService {
+	return &TokenService{
+		jwtSecret: []byte(config.Secret),
+	}
+}
+
+// GenerateJwt gera um token JWT para um usuário
 func (s *TokenService) GenerateJwt(user *model.UserDTO) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
-	claims := &model.ClaimsDTO{
+	claims := model.ClaimsDTO{
 		UserId:   user.Id,
 		Username: user.Username,
 		UserRole: user.Role,
@@ -30,28 +34,33 @@ func (s *TokenService) GenerateJwt(user *model.UserDTO) (string, error) {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtSecret)
+	tokenString, err := token.SignedString(s.jwtSecret)
 	if err != nil {
-		return "", nil
+		return "", fmt.Errorf("erro ao assinar token: %w", err)
 	}
 	return tokenString, nil
 }
 
-func (t *TokenService) GetClaims(tokenString string) (*model.ClaimsDTO, error) {
+// GetClaims extrai as claims de um token JWT
+func (s *TokenService) ValidateToken(tokenString string) (*model.ClaimsDTO, error) {
 	claims := &model.ClaimsDTO{}
-	token, err := jwt.ParseWithClaims(tokenString, claims, getValidationKey)
+	token, err := jwt.ParseWithClaims(tokenString, claims, s.getValidationKey)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("erro ao analisar token: %w", err)
 	}
-	if !token.Valid {
-		return nil, fmt.Errorf("invalid token")
+
+	if claims, ok := token.Claims.(*model.ClaimsDTO); ok && token.Valid {
+		return claims, nil
 	}
-	return claims, nil
+
+	return nil, fmt.Errorf("token inválido ou claims ausentes")
 }
 
-func getValidationKey(token *jwt.Token) (any, error) {
+// getValidationKey retorna a chave de validação do JWT
+func (s *TokenService) getValidationKey(token *jwt.Token) (any, error) {
 	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-		return nil, fmt.Errorf("invalid signature method")
+		return nil, fmt.Errorf("método de assinatura inválido: %v", token.Header["alg"])
 	}
-	return jwtSecret, nil
+
+	return s.jwtSecret, nil
 }

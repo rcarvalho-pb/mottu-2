@@ -32,7 +32,7 @@ broker-service:
 	@echo building broker service...
 	@cd ./broker_service/ && go build -o app/${BROKER_BINARY} ./cmd
 	@echo building done, starting broker service on port ${BROKER_SERVICE_PORT}
-	@cd ./broker_service/ && export AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT} BROKER_SERVICE_PORT=${BROKER_SERVICE_PORT} USER_SERVICE_PORT=${USER_SERVICE_PORT} && app/${BROKER_BINARY} &
+	@cd ./broker_service/ && export AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT} BROKER_SERVICE_PORT=${BROKER_SERVICE_PORT} TOKEN_SERVICE_PORT=${TOKEN_SERVICE_PORT} USER_SERVICE_PORT=${USER_SERVICE_PORT} MY_SECRET=${SECRET} && app/${BROKER_BINARY} &
 	@echo broker service started
 restart: stop run
 stop:

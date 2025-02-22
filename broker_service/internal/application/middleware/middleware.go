@@ -1,12 +1,21 @@
 package middleware
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/rcarvalho-pb/mottu-broker_service/internal/application/authentication"
+	"github.com/rcarvalho-pb/mottu-broker_service/internal/application/global"
 	"github.com/rcarvalho-pb/mottu-broker_service/internal/application/helper"
+	"github.com/rcarvalho-pb/mottu-broker_service/internal/application/service"
 )
+
+var tokenService *service.TokenService
+
+func Init(tService *service.TokenService) {
+	tokenService = tService
+}
 
 func Logger(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -17,24 +26,26 @@ func Logger(next http.HandlerFunc) http.HandlerFunc {
 
 func Authenticate(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := authentication.ValidateToken(r); err != nil {
+		claims, err := tokenService.ValidateToken(r)
+		if err != nil {
 			helper.ErrorJson(w, err, http.StatusUnauthorized)
 			return
 		}
-		next(w, r)
+		ctx := context.WithValue(r.Context(), global.CLAIMS, claims)
+
+		next(w, r.WithContext(ctx))
 	}
 }
 
 func IsAdmin(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := authentication.ValidateToken(r); err != nil {
-			helper.ErrorJson(w, err, http.StatusUnauthorized)
+		claims, err := tokenService.ValidateToken(r)
+		if err != nil || claims.UserRole != "admin" {
+			log.Println("erro:", err)
+			helper.ErrorJson(w, fmt.Errorf("unauthorized"), http.StatusUnauthorized)
 			return
 		}
-		if claims, err := authentication.GetClaims(r); err != nil || claims.UserRole != "Admin" {
-			helper.ErrorJson(w, err, http.StatusUnauthorized)
-			return
-		}
-		next(w, r)
+		ctx := context.WithValue(r.Context(), global.CLAIMS, claims)
+		next(w, r.WithContext(ctx))
 	}
 }
